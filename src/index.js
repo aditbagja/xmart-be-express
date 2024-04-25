@@ -13,9 +13,9 @@ const corsOptions = {
   origin: "*",
 };
 
-app.use(routes);
-app.use(cors(corsOptions));
 app.use(express.json());
+app.use(cors(corsOptions));
+app.use(routes);
 
 app.listen(port, () => {
   console.log(`Server started on port ${port}`);
