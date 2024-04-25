@@ -1,5 +1,6 @@
 require("dotenv").config();
 require("./configuration/database.config");
+require("./configuration/redis");
 
 const express = require("express");
 const port = process.env.APP_PORT;
