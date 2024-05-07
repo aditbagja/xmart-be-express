@@ -23,6 +23,47 @@ const BarangType = new GraphQLObjectType({
   },
 });
 
+const CartType = new GraphQLObjectType({
+  name: "Cart",
+  description: "Cart Schema",
+  fields: {
+    rfid: {
+      type: GraphQLString,
+    },
+    namaBarang: {
+      type: GraphQLString,
+    },
+    hargaSatuan: {
+      type: GraphQLInt,
+    },
+    jumlah: {
+      type: GraphQLInt,
+    },
+  },
+});
+
+const CartInputType = new GraphQLInputObjectType({
+  name: "CartInput",
+  description: "Cart Input Schema",
+  fields: {
+    qrcode: {
+      type: GraphQLString,
+    },
+    rfid: {
+      type: GraphQLString,
+    },
+    namaBarang: {
+      type: GraphQLString,
+    },
+    hargaSatuan: {
+      type: GraphQLInt,
+    },
+    jumlah: {
+      type: GraphQLInt,
+    },
+  },
+});
+
 const TransaksiType = new GraphQLObjectType({
   name: "Transaksi",
   description: "Transaksi Schema",
@@ -30,7 +71,7 @@ const TransaksiType = new GraphQLObjectType({
     _id: {
       type: GraphQLID,
     },
-    qrCode: {
+    qrcode: {
       type: GraphQLString,
     },
     rfid: {
@@ -52,7 +93,7 @@ const TransaksiInputType = new GraphQLInputObjectType({
   name: "TransaksiInput",
   description: "Transaksi Input Schema",
   fields: {
-    qrCode: {
+    qrcode: {
       type: new GraphQLNonNull(GraphQLString),
     },
     rfid: {
@@ -67,4 +108,10 @@ const TransaksiInputType = new GraphQLInputObjectType({
   },
 });
 
-module.exports = { BarangType, TransaksiType, TransaksiInputType };
+module.exports = {
+  BarangType,
+  CartType,
+  CartInputType,
+  TransaksiType,
+  TransaksiInputType,
+};

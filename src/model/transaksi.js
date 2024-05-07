@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const transaksiSchema = new mongoose.Schema(
   {
-    qrCode: {
+    qrcode: {
       require: true,
       type: String,
     },
