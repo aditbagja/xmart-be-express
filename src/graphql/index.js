@@ -96,7 +96,7 @@ const MutationType = new GraphQLObjectType({
 
               let IdString = newTransaksi._id.toString();
 
-              const transaksiRequest = {
+              let transaksiRequest = {
                 transaksiId: IdString,
                 qrcode: newTransaksi.qrcode,
                 rfid: newTransaksi.rfid,
@@ -105,20 +105,16 @@ const MutationType = new GraphQLObjectType({
 
               saveTransaksiToPostgre(transaksiRequest);
 
-              let listTransaksiCached = JSON.parse(
-                await redisClient.get("list-transaksi")
+              const customerTransaksiCached = JSON.parse(
+                await redisClient.get(`transaksi - ${data.qrcode}`)
               );
-
-              if (!listTransaksiCached) {
-                listTransaksiCached = [];
-                listTransaksiCached.push(newTransaksi);
+              if (customerTransaksiCached) {
+                customerTransaksiCached.push(newTransaksi);
+                redisClient.set(
+                  `transaksi - ${data.qrcode}`,
+                  JSON.stringify(customerTransaksiCached)
+                );
               }
-
-              listTransaksiCached.push(newTransaksi);
-              redisClient.set(
-                "list-transaksi",
-                JSON.stringify(listTransaksiCached)
-              );
 
               return newTransaksi;
             })
