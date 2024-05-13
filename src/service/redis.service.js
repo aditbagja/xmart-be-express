@@ -42,7 +42,7 @@ exports.sampleInsertRedisData = async (req, res) => {
     rfid: req.body.rfid,
     hargaSatuan: req.body.hargaSatuan,
     jumlah: req.body.jumlah,
-    waktuPesan: Date.now(),
+    waktuTrasaksi: Date.now(),
   };
 
   redisClient.setEx(dataJson.qrcode, expireTime, JSON.stringify(dataJson));

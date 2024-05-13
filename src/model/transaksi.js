@@ -18,7 +18,7 @@ const transaksiSchema = new mongoose.Schema(
       require: true,
       type: Number,
     },
-    waktuPesan: {
+    waktuTransaksi: {
       type: Date,
       default: Date.now(),
     },

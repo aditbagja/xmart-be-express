@@ -77,7 +77,7 @@ const TransaksiType = new GraphQLObjectType({
     jumlah: {
       type: GraphQLInt,
     },
-    waktuPesan: {
+    waktuTransaksi: {
       type: GraphQLString,
     },
   },
