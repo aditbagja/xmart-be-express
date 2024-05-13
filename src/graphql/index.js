@@ -163,30 +163,6 @@ const QueryType = new GraphQLObjectType({
         return barang;
       },
     },
-    barangById: {
-      type: BarangType,
-      args: {
-        rfid: { type: new GraphQLNonNull(GraphQLID) },
-      },
-      resolve: async (root, params) => {
-        const cachedBarang = JSON.parse(
-          await redisClient.get(`barang - ${params.rfid}`)
-        );
-
-        if (cachedBarang) {
-          console.log("Berhasil mendapatkan data detail barang dari Cache");
-          return cachedBarang;
-        }
-
-        const detailBarang = await getDetailBarang(params.rfid);
-        redisClient.set(
-          `barang - ${params.rfid}`,
-          JSON.stringify(detailBarang)
-        );
-
-        return detailBarang;
-      },
-    },
     allTransaksi: {
       type: new GraphQLList(TransaksiType),
       resolve: async (parent, args) => {
@@ -203,30 +179,6 @@ const QueryType = new GraphQLObjectType({
         redisClient.set("list-transaksi", JSON.stringify(listTransaksi));
 
         return listTransaksi;
-      },
-    },
-    transaksiById: {
-      type: TransaksiType,
-      args: {
-        id: { type: new GraphQLNonNull(GraphQLID) },
-      },
-      resolve: async (root, params) => {
-        const cachedTransaksi = JSON.parse(
-          await redisClient.get(`transaksi - ${params.id}`)
-        );
-
-        if (cachedTransaksi) {
-          console.log("Berhasil mendapatkan data detail transaksi dari Cache");
-          return cachedTransaksi;
-        }
-
-        const detailTransaksi = Transaksi.findById(params.id);
-        redisClient.set(
-          `transaksi - ${params.id}`,
-          JSON.stringify(detailTransaksi)
-        );
-
-        return detailTransaksi;
       },
     },
     userCart: {
