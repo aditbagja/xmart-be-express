@@ -30,6 +30,21 @@ exports.getDetailBarang = async (rfid) => {
   }
 };
 
+exports.getCustomerTransaksi = async (qrcode) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:8080/transaksi-management/customer-transaksi?qrcode=${qrcode}`
+    );
+
+    console.log("Berhasil mendapatkan data Customer Transaksi");
+    const transaksi = response.data.data;
+    return transaksi;
+  } catch (error) {
+    console.log(`Gagal mendapatkan data Customer Transaksi: ${error.message}`);
+    throw error;
+  }
+};
+
 exports.saveTransaksiToPostgre = async (transaksi) => {
   await axios
     .post("http://localhost:8080/transaksi-management/transaksi", transaksi)

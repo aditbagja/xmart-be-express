@@ -18,6 +18,7 @@ const {
   saveTransaksiToPostgre,
   getAllBarang,
   getDetailBarang,
+  getCustomerTransaksi,
 } = require("./apis");
 
 const MutationType = new GraphQLObjectType({
@@ -103,10 +104,6 @@ const MutationType = new GraphQLObjectType({
               };
 
               saveTransaksiToPostgre(transaksiRequest);
-              redisClient.set(
-                `transaksi - ${IdString}`,
-                JSON.stringify(newTransaksi)
-              );
 
               let listTransaksiCached = JSON.parse(
                 await redisClient.get("list-transaksi")
@@ -181,7 +178,50 @@ const QueryType = new GraphQLObjectType({
         return listTransaksi;
       },
     },
-    userCart: {
+    customerTransaksi: {
+      type: new GraphQLList(TransaksiType),
+      args: {
+        qrcode: { type: new GraphQLNonNull(GraphQLID) },
+      },
+      resolve: async (root, params) => {
+        const cachedTransaksi = JSON.parse(
+          await redisClient.get(`transaksi - ${params.qrcode}`)
+        );
+
+        if (cachedTransaksi) {
+          console.log(
+            "Berhasil mendapatkan data Customer Transaksi dari Cache"
+          );
+          return cachedTransaksi;
+        }
+
+        const customerTransaksi = await getCustomerTransaksi(params.qrcode);
+
+        let newCachedTransaksi = [];
+        customerTransaksi.map((data) => {
+          let transaksi = {
+            _id: data.transaksiId,
+            qrcode: data.customer.qrcode,
+            rfid: data.barang.rfid,
+            hargaSatuan: data.hargaSatuan,
+            jumlah: data.jumlah,
+            waktuTransaksi: data.waktuTransaksi,
+          };
+
+          newCachedTransaksi.push(transaksi);
+        });
+
+        redisClient.set(
+          `transaksi - ${params.qrcode}`,
+          JSON.stringify(newCachedTransaksi)
+        );
+
+        console.log("Berhasil mendapatkan data Customer Transaksi");
+
+        return newCachedTransaksi;
+      },
+    },
+    customerCart: {
       type: new GraphQLList(CartType),
       args: {
         qrcode: { type: new GraphQLNonNull(GraphQLID) },
