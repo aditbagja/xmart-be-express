@@ -39,11 +39,15 @@ const MutationType = new GraphQLObjectType({
             await redisClient.get(`cart - ${request.qrcode}`)
           );
 
+          const barang = await getDetailBarang(request.rfid);
+          const newBarang = {
+            ...barang,
+            jumlah: 1,
+          };
+
           console.log("Berhasil checkin barang ke Redis");
 
           if (cartExist) {
-            console.log(`rfid dari request: ${JSON.stringify(request.rfid)}`);
-
             cartExist.map((data) => {
               if (request.rfid === data.rfid) {
                 data.jumlah = data.jumlah + request.jumlah;
@@ -52,7 +56,7 @@ const MutationType = new GraphQLObjectType({
             });
 
             if (!cartExist.some((data) => data.rfid === request.rfid)) {
-              cartExist.push(request);
+              cartExist.push(newBarang);
             }
 
             redisClient.set(
@@ -64,7 +68,7 @@ const MutationType = new GraphQLObjectType({
           } else {
             let newCart = [];
 
-            newCart.push(request);
+            newCart.push(newBarang);
             redisClient.set(
               `cart - ${request.qrcode}`,
               JSON.stringify(newCart)

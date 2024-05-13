@@ -52,12 +52,6 @@ const CartInputType = new GraphQLInputObjectType({
     rfid: {
       type: GraphQLString,
     },
-    namaBarang: {
-      type: GraphQLString,
-    },
-    hargaSatuan: {
-      type: GraphQLInt,
-    },
     jumlah: {
       type: GraphQLInt,
     },
