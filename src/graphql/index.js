@@ -83,6 +83,40 @@ const MutationType = new GraphQLObjectType({
         }
       },
     },
+    deleteBarangCart: {
+      type: new GraphQLList(CartType),
+      args: {
+        barang: {
+          type: CartInputType,
+        },
+      },
+      resolve: async (root, params) => {
+        console.log(params);
+        try {
+          let customerCart = JSON.parse(
+            await redisClient.get(`cart - ${params.barang.qrcode}`)
+          );
+
+          if (customerCart) {
+            customerCart = customerCart.filter(
+              (item) => item.rfid !== params.barang.rfid
+            );
+
+            redisClient.set(
+              `cart - ${params.barang.qrcode}`,
+              JSON.stringify(customerCart)
+            );
+
+            return customerCart;
+          } else {
+            return null;
+          }
+        } catch (error) {
+          console.log(`Gagal menghapus Barang dari Cart: ${error.message}`);
+          throw error;
+        }
+      },
+    },
     tambahTransaksi: {
       type: new GraphQLList(TransaksiType),
       args: {
