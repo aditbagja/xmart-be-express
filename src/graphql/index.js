@@ -43,7 +43,7 @@ const MutationType = new GraphQLObjectType({
           const barang = await getDetailBarang(request.rfid);
           const newBarang = {
             ...barang,
-            jumlah: 1,
+            jumlah: request.jumlah,
           };
 
           console.log("Berhasil checkin barang ke Redis");
@@ -90,6 +90,10 @@ const MutationType = new GraphQLObjectType({
       },
       resolve: async (root, params) => {
         try {
+          const listTransaksiCached = JSON.parse(
+            await redisClient.get("list-transaksi")
+          );
+
           const response = await Promise.all(
             params.transaksi.map(async (data) => {
               const newTransaksi = await new Transaksi(data).save();
@@ -113,6 +117,13 @@ const MutationType = new GraphQLObjectType({
                 redisClient.set(
                   `transaksi - ${data.qrcode}`,
                   JSON.stringify(customerTransaksiCached)
+                );
+              }
+              if (listTransaksiCached) {
+                listTransaksiCached.push(newTransaksi);
+                redisClient.set(
+                  "list-transaksi",
+                  JSON.stringify(listTransaksiCached)
                 );
               }
 
