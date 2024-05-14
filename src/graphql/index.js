@@ -107,6 +107,10 @@ const MutationType = new GraphQLObjectType({
               JSON.stringify(customerCart)
             );
 
+            if (customerCart.length === 0) {
+              redisClient.del(`cart - ${params.barang.qrcode}`);
+            }
+
             return customerCart;
           } else {
             return null;
@@ -146,6 +150,10 @@ const MutationType = new GraphQLObjectType({
               const customerTransaksiCached = JSON.parse(
                 await redisClient.get(`transaksi - ${data.qrcode}`)
               );
+
+              const customerCart = JSON.parse(
+                await redisClient.get(`cart - ${data.qrcode}`)
+              );
               if (customerTransaksiCached) {
                 customerTransaksiCached.push(newTransaksi);
                 redisClient.set(
@@ -159,6 +167,9 @@ const MutationType = new GraphQLObjectType({
                   "list-transaksi",
                   JSON.stringify(listTransaksiCached)
                 );
+              }
+              if (customerCart) {
+                redisClient.del(`cart - ${data.qrcode}`);
               }
 
               return newTransaksi;
